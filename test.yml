@@ -1,4 +1,3 @@
 - hosts: qcloud_api
   tasks:
-    - shell: echo $HOSTNAME
-    - include: roles/hosts/tasks/hosts.yaml
+    - include: roles/common/tasks/aws_cli.yaml
