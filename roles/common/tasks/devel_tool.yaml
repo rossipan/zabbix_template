@@ -1,0 +1,22 @@
+---
+
+- name: Remove epel.repo
+  shell: "{{ item }}"
+  with_items:
+    - rm -f /etc/yum.repos.d/epel.repo
+    - rm -f /etc/yum.repos.d/epel-testing.repo
+    - yum clean all
+  ignore_errors: True
+
+- name: Install the Development tools package group
+  yum: name="@Development tools" state=present
+
+- name: Install system developing tools
+  yum: name={{ item }} state=present
+  with_items:
+   - "zlib-devel"
+   - "bzip2-devel"
+   - "ncurses-devel"
+   - "sqlite-devel"
+   - "readline-devel"
+   - "tk-devel"

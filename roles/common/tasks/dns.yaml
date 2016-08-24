@@ -1,0 +1,4 @@
+---
+
+- name: Ensure dns servers are configured in /etc/resolv.conf
+  template: src=resolv.conf.erb dest=/etc/resolv.conf

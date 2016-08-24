@@ -1,0 +1,15 @@
+---
+
+- name: Remove openssl098e package
+  yum: name={{ item }} state=absent
+  with_items:
+   - "openssl098e"
+
+
+- name: Update openssl package
+  yum: name={{ item }} state=latest
+  with_items:
+   - "openssl"
+   - "openssl-devel"
+   - "openssl-perl"
+   - "openssl-static"

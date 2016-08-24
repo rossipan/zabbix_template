@@ -1,0 +1,8 @@
+---
+
+- name: Disable the iptables service
+  service: name=iptables state=stopped enabled=false
+
+- name: Disable the ip6tables service
+  service: name=ip6tables state=stopped enabled=false
+  ignore_errors: True

@@ -1,0 +1,78 @@
+---
+
+- name: Install virtualenv
+  pip: name=virtualenv
+
+- name: Set /etc/pip.conf
+  template: src='pip.conf.erb'
+            dest='/etc/pip.conf'
+            mode=644
+            owner=root
+            group=root
+
+- name: Register python_runtime_name fact when python_runtime = pypy
+  set_fact:
+      python_runtime_name: "PyPy 2.3.1"
+  when: python_runtime  == '{{ pypy_bin }}'
+
+- name: Register python_runtime_name fact when python_runtime = python
+  set_fact:
+      python_runtime_name: "Python 2.7.5"
+  when: python_runtime  == '{{ python_bin }}'
+
+- name: Register Variables of python runtime
+  shell: test -e {{ venv_dir }}/bin/python && {{ venv_dir }}/bin/python --version 2>&1 |grep "{{ python_runtime_name }}"
+  register: python_version
+  ignore_errors: True
+
+- name: echo python_version
+  debug: msg="{{ python_version.stdout }}"
+
+- name: echo python_runtime_name
+  debug: msg="{{ python_runtime_name }}"
+
+- name: Remove '{{ venv_dir }}'
+  file: dest='{{ venv_dir }}'
+        state=absent
+  when: python_version.rc != 0
+
+- name: Create Python virtualenv
+  command: creates={{ venv_dir }} virtualenv --no-site-packages -p {{ python_runtime }} {{ venv_dir }}
+
+- name: Install '{{ package_name }}'
+  pip: name={{ package_name }}
+       virtualenv_command='{{ venv_dir }}/bin/pip'
+       virtualenv='{{ venv_dir }}'
+       extra_args="--find-links {{ pypi_url }} -U --no-index"
+  when: package_name is defined
+
+- name: Install '{{ requirements_file }}'
+  pip: virtualenv='{{ venv_dir }}'
+       virtualenv_command='{{ venv_dir }}/bin/pip'
+       requirements='{{ requirements_file }}'
+       extra_args="--find-links {{ pypi_url }} -U --no-index"
+  when: requirements_file is defined and ignore_package_name is not defined
+
+- name: Install '{{ requirements_file }}' --ignore-installed {{ ignore_package_name }}
+  pip: virtualenv='{{ venv_dir }}'
+       virtualenv_command='{{ venv_dir }}/bin/pip'
+       requirements='{{ requirements_file }}'
+       extra_args="--find-links {{ pypi_url }} -U --no-index --ignore-installed {{ ignore_package_name }}"
+  when: requirements_file is defined and ignore_package_name is defined
+
+# it is a trick, the virtualenv dir created by pypy doesnot contain lib/python2.7 directory
+# However, bin/activate_this.py needs it to address all the 3rd-party libraries.
+- name: Create lib/python2.7 directory
+  file: path={{ item }}
+        state=directory
+        mode=755
+  with_items:
+    - '{{ venv_dir }}/lib'
+    - '{{ venv_dir }}/lib/python2.7'
+  when: python_runtime == "{{ pypy_bin }}"
+
+- name: create lib/python2.7 symlink
+  file: src='{{ venv_dir }}/site-packages'
+        dest='{{ venv_dir }}/lib/python2.7/site-packages'
+        state=link
+  when: python_runtime == "{{ pypy_bin }}"

@@ -1,0 +1,27 @@
+---
+
+- name: Load bridge module
+  shell: modprobe bridge
+  when: ansible_distribution == 'CentOS' and ansible_distribution_version == '6.2'
+
+- name: Update /etc/sysctl.conf for for centos6.5
+  sysctl: name={{ item.key }} state={{ item.state }} reload=no sysctl_file=/etc/sysctl.conf
+  with_items:
+    - { key: 'net.bridge.bridge-nf-call-ip6tables', state: 'absent' }
+    - { key: 'net.bridge.bridge-nf-call-iptables', state: 'absent' }
+    - { key: 'net.bridge.bridge-nf-call-arptables', state: 'absent' }
+  when: ansible_distribution == 'CentOS' and ansible_distribution_version == '6.5'
+
+- name: Update /etc/sysctl.conf
+  sysctl: name={{ item.key }} value={{ item.value }} state={{ item.state }} reload=yes sysctl_file=/etc/sysctl.conf
+  with_items:
+    - { key: 'net.core.somaxconn', value: '262144' , state: 'present' }
+    - { key: 'vm.swappiness', value: '10' , state: 'present' }
+    - { key: 'net.core.netdev_max_backlog', value: '262144' , state: 'present' }
+    - { key: 'net.ipv4.tcp_max_syn_backlog', value: '262144' , state: 'present' }
+    - { key: 'net.ipv4.tcp_syncookies', value: '1' , state: 'present' }
+    - { key: 'net.ipv4.tcp_tw_reuse', value: '1' , state: 'present' }
+    - { key: 'net.ipv4.tcp_tw_recycle', value: '1' , state: 'present' }
+    - { key: 'net.ipv4.tcp_syn_retries', value: '1' , state: 'present' }
+    - { key: 'net.ipv4.tcp_synack_retries', value: '3' , state: 'present' }
+    - { key: 'fs.file-max', value: '331287' , state: 'present' }

@@ -1,0 +1,4 @@
+- hosts: qcloud_api
+  tasks:
+    - shell: echo $HOSTNAME
+    - include: roles/hosts/tasks/hosts.yaml

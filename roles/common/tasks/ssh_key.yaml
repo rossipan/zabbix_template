@@ -1,0 +1,10 @@
+---
+
+- name: Create ~/.ssh
+  file: path={{ item }}
+        state=directory
+  with_items:
+    - '~/.ssh'
+
+- name: INIT | Set public SSH key
+  authorized_key: user={{ ansible_env['USER'] }} key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"

@@ -1,0 +1,24 @@
+---
+
+### Install Python Image Library related packages
+- name: Install Python Image Library related packages
+  yum: name={{ item }} state=present
+  with_items:
+   - "gdbm-devel"
+   - "freetype"
+   - "freetype-devel"
+   - "libpng"
+   - "libpng-devel"
+   - "libjpeg-turbo"
+   - "libjpeg-turbo-devel"
+
+- name: Remove pypy-libs and pypy-devel
+  yum: name={{ item }} state=absent
+  with_items:
+   - "pypy-libs"
+   - "pypy-devel"
+
+- name: Install pypy
+  yum: name={{ item }} state=latest
+  with_items:
+   - "pypy"
