@@ -43,29 +43,6 @@ function getstate() {
 
     done
 
-    /usr/local/bin/casperjs test ${ZABBIX_EXTERNAL_SCRIPTS}/login_auth.js >$TEMP_PATH/auth_login_stat.tmp
-    LOGIN_AUTH_NO_DUBIOS=`cat /tmp/auth_login_stat.tmp |grep "tests executed in" | grep "0 dubious" -wc`
-    LOGIN_AUTH_NO_FAILED=`cat /tmp/auth_login_stat.tmp |grep "tests executed in" | grep "0 failed" -wc`
-    LOGIN_AUTH_RESOURCE_ERROR=`cat /tmp/auth_login_stat.tmp |grep "ResourceError" -wc`
-
-    if [ "$LOGIN_AUTH_NO_DUBIOS" == "1" ] && [ "$LOGIN_AUTH_NO_FAILED" == "1" ] && [ "$LOGIN_AUTH_RESOURCE_ERROR" == "0" ]; then
-        echo - SITE.status[\"account_center\",CASPERJS_TEST_ERROR] "0" >>$TEMP_PATH/site_stat.data
-    else
-        echo - SITE.status[\"account_center\",CASPERJS_TEST_ERROR] "1" >>$TEMP_PATH/site_stat.data
-    fi
-
-    /usr/local/bin/casperjs test ${ZABBIX_EXTERNAL_SCRIPTS}/login_portal.js >$TEMP_PATH/portal_login_stat.tmp
-    LOGIN_PORTAL_NO_DUBIOS=`cat /tmp/portal_login_stat.tmp |grep "tests executed in" | grep "0 dubious" -wc`
-    LOGIN_PORTAL_NO_FAILED=`cat /tmp/portal_login_stat.tmp |grep "tests executed in" | grep "0 failed" -wc`
-    LOGIN_PORTAL_RESOURCE_ERROR=`cat /tmp/portal_login_stat.tmp |grep "ResourceError" -wc`
-    LOGIN_PORTAL_JS_ERROR=`cat /tmp/portal_login_stat.tmp |grep "JavaScriptExecution" -wc`
-
-    if [ "$LOGIN_PORTAL_NO_DUBIOS" == "1" ] && [ "$LOGIN_PORTAL_NO_FAILED" == "1" ] && [ "$LOGIN_PORTAL_RESOURCE_ERROR" == "0" ] && [ "$LOGIN_PORTAL_JS_ERROR" == "0" ]; then
-        echo - SITE.status[\"portal\",CASPERJS_TEST_ERROR] "0" >>$TEMP_PATH/site_stat.data
-    else
-        echo - SITE.status[\"portal\",CASPERJS_TEST_ERROR] "1" >>$TEMP_PATH/site_stat.data
-    fi
-
     $ZABBIX_SENDER -c $ZABBIX_CONFIG -i $TEMP_PATH/site_stat.data -vv
 }
 
