@@ -1,9 +1,0 @@
----
-
-- name: Create the hosts file for all machines (Private IP)
-  template: src=hosts.erb dest='/etc/hosts'
-  when: located_in is not defined or located_in == "office" or located_in == "aws_vpc"
-
-- name: Create the hosts file for all machines (Public IP)
-  template: src=hosts_external.erb dest='/etc/hosts'
-  when: located_in is defined and (located_in == "linode" or located_in == "gce" or located_in == "aliyu" or located_in == "west.cn" or located_in == "aws_ec2")

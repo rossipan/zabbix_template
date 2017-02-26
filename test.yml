@@ -1,3 +1,0 @@
-- hosts: qcloud_api
-  tasks:
-    - include: roles/common/tasks/aws_cli.yaml

@@ -1,7 +1,0 @@
----
-
-- name: Edit /etc/sysconfig/network
-  lineinfile: dest=/etc/sysconfig/network regexp=^HOSTNAME= line=HOSTNAME={{ inventory_hostname }}
-
-- name: Set hostname
-  shell: hostname {{ inventory_hostname }}
